@@ -5,11 +5,13 @@ let {User} = require('./models/user');
 let {ObjectID} = require('mongodb');
 let express = require('express');
 let bodyParser = require('body-parser');
+let filter = require('content-filter');
 
 let app = express();
 let port = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
+app.use(filter());
 
 app.post('/todos', (req, res) => {
     let todo = new Todo({
