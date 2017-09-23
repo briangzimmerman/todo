@@ -7,7 +7,7 @@ let express = require('express');
 let bodyParser = require('body-parser');
 
 let app = express();
-let port = process.evc.PORT || 3000;
+let port = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 
