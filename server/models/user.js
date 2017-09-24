@@ -32,6 +32,7 @@ let userSchema = new mongoose.Schema({
     }]
 });
 
+//Override to control what data gets sent back to the user
 userSchema.methods.toJSON = function() {
     let user = this;
     let userObj = user.toObject();
@@ -52,6 +53,23 @@ userSchema.methods.generateAuthToken = function() {
         .then((res) => {
             return token;
         });
+};
+
+userSchema.statics.findByToken = function(token) {
+    let User = this;
+    let decoded;
+
+    try {
+        decoded = jwt.verify(token, 'salt');
+    } catch(err) {
+        return Promise.reject();
+    }
+
+    return User.findOne({
+        '_id': decoded._id,
+        'tokens.token': token,
+        'tokens.access': 'auth'
+    })
 };
 
 let User = mongoose.model('User', userSchema);
