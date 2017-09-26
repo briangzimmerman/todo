@@ -1,11 +1,11 @@
 const expect = require('expect');
 const request = require('supertest');
-const {ObjectID} = require('mongodb');
+const { ObjectID } = require('mongodb');
 
-const {app} = require('./../server/server');
-const {Todo} = require('./../server/models/todo');
-const {User} = require('./../server/models/user');
-const {todos, populateTodos, users, populateUsers} = require('./seed/seed');
+const { app } = require('./../server/server');
+const { Todo } = require('./../server/models/todo');
+const { User } = require('./../server/models/user');
+const { todos, populateTodos, users, populateUsers } = require('./seed/seed');
 
 beforeEach(populateTodos);
 beforeEach(populateUsers);
@@ -16,16 +16,16 @@ describe('POST /todos', () => {
         let text = 'Test todo';
         request(app)
             .post('/todos')
-            .send({text})
+            .send({ text })
             .expect(200) //Good status
             .expect((res) => {
                 expect(res.body.todo.text).toBe(text);
             })
             .end((err, res) => {
-                if(err) {
+                if (err) {
                     done(err);
                 } else { //test that it's in db
-                    Todo.find({text})
+                    Todo.find({ text })
                         .then((todos) => {
                             expect(todos.length).toBe(1);
                             expect(todos[0].text).toBe(text);
@@ -42,7 +42,7 @@ describe('POST /todos', () => {
             .send({})
             .expect(400)
             .end((err, res) => {
-                if(err) {
+                if (err) {
                     done(err);
                 } else {
                     Todo.find()
@@ -104,7 +104,7 @@ describe('DELETE /todos/:id', () => {
                 expect(res.body.todo._id).toBe(id);
             })
             .end((err, res) => {
-                if(err) { done(err); }
+                if (err) { done(err); }
                 else {
                     Todo.findById(id)
                         .then((todo) => {
@@ -199,7 +199,7 @@ describe('POST /users', () => {
         let password = 'testPassword';
         request(app)
             .post('/users')
-            .send({email, password})
+            .send({ email, password })
             .expect(200)
             .expect((res) => {
                 expect(res.headers['x-auth']).toExist();
@@ -207,9 +207,9 @@ describe('POST /users', () => {
                 expect(res.body.user.email).toBe(email);
             })
             .end((err) => {
-                if(err)
+                if (err)
                     return done(err);
-                User.findOne({email})
+                User.findOne({ email })
                     .then((user) => {
                         expect(user).toExist();
                         expect(user.password).toNotBe(password);
@@ -255,7 +255,7 @@ describe('POST /users/login', () => {
                 expect(res.headers['x-auth']).toExist();
             })
             .end((err, res) => {
-                if(err) { done(err); }
+                if (err) { done(err); }
                 User.findById(users[1]._id)
                     .then((user) => {
                         expect(user.tokens[0]).toInclude({
@@ -272,25 +272,25 @@ describe('POST /users/login', () => {
 
     it('should reject invalid login', (done) => {
         request(app)
-        .post('/users/login')
-        .send({
-            email: users[1].email,
-            password: 'wrongpassword'
-        })
-        .expect(400)
-        .expect((res) => {
-            expect(res.headers['x-auth']).toNotExist();
-        })
-        .end((err, res) => {
-            if(err) { done(err); }
-            User.findById(users[1]._id)
-                .then((user) => {
-                    expect(user.tokens.length).toBe(0);
-                    done();
-                })
-                .catch((err) => {
-                    done(err);
-                })
-        });
+            .post('/users/login')
+            .send({
+                email: users[1].email,
+                password: 'wrongpassword'
+            })
+            .expect(400)
+            .expect((res) => {
+                expect(res.headers['x-auth']).toNotExist();
+            })
+            .end((err, res) => {
+                if (err) { done(err); }
+                User.findById(users[1]._id)
+                    .then((user) => {
+                        expect(user.tokens.length).toBe(0);
+                        done();
+                    })
+                    .catch((err) => {
+                        done(err);
+                    })
+            });
     });
 });
