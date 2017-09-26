@@ -39,7 +39,7 @@ const users = [
             token: jwt.sign({
                 _id: user1Id,
                 access: 'auth'
-            }, 'salt').toString()
+            }, process.env.JWT_SALT).toString()
         }]
     }, {
         _id: user2Id,
@@ -50,7 +50,7 @@ const users = [
             token: jwt.sign({
                 _id: user2Id,
                 access: 'auth'
-            }, 'salt').toString()
+            }, process.env.JWT_SALT).toString()
         }]
     }
 ];
