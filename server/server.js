@@ -100,6 +100,17 @@ app.get('/users/me', authenticate, (req, res) => {
     res.send({'user': req.user});
 });
 
+app.post('/users/login', (req, res) => {
+    let userData = _.pick(req.body, ['email', 'password']);
+    User.findByCredentials(userData.email, userData.password)
+        .then((user) => {
+            res.send({user});
+        })
+        .catch((err) => {
+            res.status(400).send();
+        });
+});
+
 app.listen(process.env.PORT, () => {
     console.log(`Started express server on port ${process.env.PORT}...`);
 })
